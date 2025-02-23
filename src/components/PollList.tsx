@@ -4,7 +4,7 @@ import { isPollEnded } from '../utils/pollUtils';
 import { VStack, Button, Heading, Text, Box, Badge, HStack, Spacer } from '@chakra-ui/react';
 
 const PollList = () => {
-  const { data: polls, isLoading, error } = usePolls();
+  const { data: polls, isLoading, error } = usePolls(3000);
 
   if (isLoading) {
     return <div>로딩 중...</div>;
