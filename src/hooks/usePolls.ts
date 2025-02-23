@@ -2,17 +2,19 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getPoll, getPolls, createPoll, addOption, vote, endPoll } from '../api/polls';
 import type { ChoicePoll } from '../types/poll';
 
-export function usePolls() {
+export function usePolls(interval?: number) { 
   return useQuery({
     queryKey: ['polls'],
-    queryFn: getPolls
+    queryFn: getPolls,
+    refetchInterval: interval
   });
 }
 
-export function usePoll(pollId: string) {
+export function usePoll(pollId: string, interval?: number) {
   return useQuery({
     queryKey: ['poll', pollId],
-    queryFn: () => getPoll(pollId)
+    queryFn: () => getPoll(pollId),
+    refetchInterval: interval
   });
 }
 
