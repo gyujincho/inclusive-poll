@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getPoll, getPolls, createPoll, addOption, vote, endPoll } from '../api/polls';
 import type { ChoicePoll } from '../types/poll';
+import { useInterval } from '@toss/react';
 
 export function usePolls(interval?: number) { 
   return useQuery({
@@ -16,6 +17,18 @@ export function usePoll(pollId: string, interval?: number) {
     queryFn: () => getPoll(pollId),
     refetchInterval: interval
   });
+}
+
+export function useIntervalInvalidatePoll(pollId: string, interval: number | null = 5000) {
+  const queryClient = useQueryClient();
+  
+  const invalidate = () => {
+    return queryClient.invalidateQueries({ queryKey: ['poll', pollId] });
+  };
+
+  useInterval(invalidate, { delay: interval });
+
+  return { invalidate };
 }
 
 export function useCreatePoll() {

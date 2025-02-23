@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ChoicePoll } from '../../types/poll';
-import { useAddOption, useVote } from '../../hooks/usePolls';
+import { useAddOption, useIntervalInvalidatePoll, useVote } from '../../hooks/usePolls';
 import { VStack, HStack, Button, Heading, Text, Input } from '@chakra-ui/react';
 import { VoteItem } from '../VoteItem';
 
@@ -15,6 +15,8 @@ const VoteForm = ({ poll, userId, onVoteComplete }: VoteFormProps) => {
   const [newOption, setNewOption] = useState('');
   const addOptionMutation = useAddOption();
   const voteMutation = useVote();
+
+  useIntervalInvalidatePoll(poll.id, 800);
 
   const isSingleSelect = poll.minOptionsPerVote === 1 && poll.maxOptionsPerVote === 1;
 
