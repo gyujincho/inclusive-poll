@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getPoll, getPolls, createPoll, addOption, vote, endPoll } from '../api/polls';
+import { getPoll, getPolls, createPoll, addOption, vote, endPoll, updatePoll } from '../api/polls';
 import type { ChoicePoll } from '../types/poll';
 import { useInterval } from '@toss/react';
 
@@ -75,6 +75,20 @@ export function useEndPoll() {
     mutationFn: ({ pollId, buffer }: { pollId: string; buffer?: number}) => endPoll(pollId, buffer),
     onSuccess: (_, { pollId }) => {
       // 투표 종료 후 해당 투표와 투표 목록을 갱신
+      queryClient.invalidateQueries({ queryKey: ['polls'] });
+      queryClient.invalidateQueries({ queryKey: ['poll', pollId] });
+    },
+  });
+}
+
+export function useUpdatePoll() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ pollId, updates }: { pollId: string; updates: Partial<ChoicePoll> }) =>
+      updatePoll(pollId, updates),
+    onSuccess: (_, { pollId }) => {
+      // 투표 수정 후 해당 투표와 투표 목록을 갱신
       queryClient.invalidateQueries({ queryKey: ['polls'] });
       queryClient.invalidateQueries({ queryKey: ['poll', pollId] });
     },

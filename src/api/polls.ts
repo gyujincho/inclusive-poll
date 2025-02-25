@@ -118,3 +118,23 @@ export async function endPoll(pollId: string, buffer: number = 0 /* 초 */) {
     throw error;
   }
 }
+
+export async function updatePoll(pollId: string, updates: Partial<ChoicePoll>) {
+  const pollRef = doc(db, 'polls', pollId);
+  
+  await runTransaction(db, async (transaction) => {
+    const pollDoc = await transaction.get(pollRef);
+    if (!pollDoc.exists()) {
+      throw new Error('투표를 찾을 수 없습니다.');
+    }
+
+    const poll = pollDoc.data() as ChoicePoll;
+    if (poll.type !== 'choice') {
+      throw new Error('선택형 투표가 아닙니다.');
+    }
+
+    transaction.update(pollRef, updates);
+  });
+
+  return (await getDoc(pollRef)).data() as Poll;
+}

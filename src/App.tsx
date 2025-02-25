@@ -12,6 +12,7 @@ import { queryClient } from './lib/queryClient';
 import './App.css';
 import Login from './components/Login';
 import CreatePoll from './components/CreatePoll';
+import EditPoll from './components/EditPoll';
 import PollList from './components/PollList';
 import PollDetail from './components/PollDetail';
 import { AuthProvider, useAuth } from './contexts/auth';
@@ -133,9 +134,18 @@ const pollShareRoute = createRoute({
   },
 });
 
+const pollEditRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: '/polls/$pollId/edit',
+  component: function PollEditPage() {
+    const { pollId } = pollEditRoute.useParams();
+    return <EditPoll pollId={pollId} />;
+  },
+});
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
-  protectedRoute.addChildren([indexRoute, createPollRoute, pollDetailRoute, pollShareRoute])
+  protectedRoute.addChildren([indexRoute, createPollRoute, pollDetailRoute, pollShareRoute, pollEditRoute])
 ]);
 
 const router = createRouter({ routeTree });

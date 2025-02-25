@@ -6,11 +6,13 @@ import MyVote from './poll/MyVote';
 import VoteForm from './poll/VoteForm';
 import { VStack, Heading, Text, Separator, Button } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
+import { useNavigate } from '@tanstack/react-router';
 
 const PollDetail = ({ pollId }: { pollId: string }) => {
   const user = useProtectedUser();
   const { data: poll, isLoading, error } = usePoll(pollId);
   const endPollMutation = useEndPoll();
+  const navigate = useNavigate();
   const [isRevoting, setIsRevoting] = useState(false);
   const [remainingTime, setRemainingTime] = useState<string>('');
 
@@ -78,6 +80,10 @@ const PollDetail = ({ pollId }: { pollId: string }) => {
     }
   };
 
+  const handleEditPoll = () => {
+    navigate({ to: '/polls/$pollId/edit', params: { pollId } });
+  };
+
   return (
     <VStack gap={4} w="100%">
       <Heading as="h2" size="xl" mb={6} textAlign="center">{poll.title}</Heading>
@@ -103,11 +109,16 @@ const PollDetail = ({ pollId }: { pollId: string }) => {
             {remainingTime}
           </Text>
         )}
-        {!ended && isCreator && poll.expiresAt && !remainingTime.includes('곧 종료') && (
-          <Button colorPalette="red" size="sm" onClick={handleEndPoll}>투표 30초 후에 종료하기</Button>
+        {!ended && isCreator && poll.expiresAt && (
+          <>
+            <Button colorPalette="gray" variant="outline" size="sm" onClick={handleEditPoll}>투표 수정하기</Button>
+            {!remainingTime.includes('곧 종료') && (
+              <Button colorPalette="red" size="sm" onClick={handleEndPoll}>투표 30초 후에 종료하기</Button>
+            )}
+          </>
         )}
       </VStack>
-
+      
       <Separator w="100%" css={{ margin: '24px 0' }}/>
 
       {ended ? (
@@ -125,8 +136,6 @@ const PollDetail = ({ pollId }: { pollId: string }) => {
           onRevote={() => setIsRevoting(true)} 
         />
       )}
-
-      
     </VStack>
   );
 };
