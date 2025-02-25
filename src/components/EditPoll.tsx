@@ -17,7 +17,7 @@ const EditPoll = ({ pollId }: { pollId: string }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [options, setOptions] = useState<string[]>(['', '']);
-  const [duration, setDuration] = useState(10);
+  const [extensionMinutes, setExtensionMinutes] = useState(0);
   const [showVoters, setShowVoters] = useState(false);
   const [allowOptionCreation, setAllowOptionCreation] = useState(false);
   const [allowMultipleSelection, setAllowMultipleSelection] = useState(false);
@@ -31,11 +31,6 @@ const EditPoll = ({ pollId }: { pollId: string }) => {
       setTitle(poll.title);
       setDescription(poll.description || '');
       setOptions(poll.options.map(opt => opt.text));
-      // Calculate remaining duration in minutes
-      const now = new Date();
-      const expiresAt = poll.expiresAt.toDate();
-      const remainingMinutes = Math.max(1, Math.ceil((expiresAt.getTime() - now.getTime()) / (60 * 1000)));
-      setDuration(remainingMinutes);
       setShowVoters(poll.showVoters);
       setAllowOptionCreation(poll.allowOptionCreation);
       setAllowMultipleSelection(poll.maxOptionsPerVote > 1);
@@ -52,7 +47,6 @@ const EditPoll = ({ pollId }: { pollId: string }) => {
       const pollOptions: ChoiceOption[] = options
         .filter(opt => opt.trim())
         .map((text, index) => {
-          // Preserve existing option IDs if possible
           const existingOption = poll?.options[index];
           return {
             id: existingOption?.id || nanoid(),
@@ -76,8 +70,14 @@ const EditPoll = ({ pollId }: { pollId: string }) => {
         minOptionsPerVote: allowMultipleSelection ? minOptionsPerVote : 1,
         maxOptionsPerVote: allowMultipleSelection ? maxOptionsPerVote : 1,
         targetVoterCount: targetVoterCount || null,
-        expiresAt: Timestamp.fromMillis(Date.now() + duration * 60 * 1000),
       };
+
+      if (extensionMinutes > 0) {
+        const currentExpiryTime = poll!.expiresAt.toDate();
+        updates.expiresAt = Timestamp.fromDate(
+          new Date(currentExpiryTime.getTime() + extensionMinutes * 60 * 1000)
+        );
+      }
 
       await updatePollMutation.mutateAsync({ pollId, updates });
       navigate({ to: '/polls/$pollId', params: { pollId } });
@@ -127,25 +127,62 @@ const EditPoll = ({ pollId }: { pollId: string }) => {
           <Separator/>
 
           <Field.Root>
-            <Field.Label>투표 옵션</Field.Label>
+            <Field.Label>투표 옵션 (수정 불가)</Field.Label>
             <VStack gap={3} w="100%">
               {options.map((option, index) => (
                 <HStack key={index} w="100%">
-                  <Input value={option} onChange={(e) => handleOptionChange(index, e.target.value)} placeholder={`옵션 ${index + 1}`} />
+                  <Input 
+                    value={option} 
+                    onChange={(e) => handleOptionChange(index, e.target.value)} 
+                    placeholder={`옵션 ${index + 1}`}
+                    disabled
+                  />
                   {options.length > 2 && (
-                    <Button size="sm" colorScheme="red" variant="ghost" onClick={() => removeOption(index)}>삭제</Button>
+                    <Button 
+                      size="sm" 
+                      colorScheme="red" 
+                      variant="ghost" 
+                      onClick={() => removeOption(index)}
+                      disabled
+                    >삭제</Button>
                   )}
                 </HStack>
               ))}
-              <Button size="sm" w="100%" colorScheme="blue" variant="surface" onClick={addOption}>+ 옵션 추가</Button>
+              <Button 
+                size="sm" 
+                w="100%" 
+                colorScheme="blue" 
+                variant="surface" 
+                onClick={addOption}
+                disabled
+              >+ 옵션 추가</Button>
+              {poll && (
+                <Text fontSize="sm" color="gray.500">
+                  이미 투표가 시작된 설문의 옵션은 수정할 수 없습니다.
+                </Text>
+              )}
             </VStack>
           </Field.Root>
 
           <Separator />
 
           <Field.Root>
-            <Field.Label>남은 투표 기간 (분)</Field.Label>
-            <Input type="number" min="1" value={duration} onChange={(e) => setDuration(Number(e.target.value))} placeholder="분 단위로 입력하세요" />
+            <Field.Label>종료 시간 연장 (분)</Field.Label>
+            <Input 
+              type="number" 
+              min="0" 
+              value={extensionMinutes} 
+              onChange={(e) => setExtensionMinutes(Number(e.target.value))}
+              placeholder="연장할 시간을 분 단위로 입력하세요 (0 = 연장하지 않음)" 
+            />
+            {poll && (
+              <Text fontSize="sm" color="gray.500" mt={1}>
+                현재 종료 시간: {poll.expiresAt.toDate().toLocaleString()}
+                {extensionMinutes > 0 && (
+                  <><br />연장 후 종료 시간: {new Date(poll.expiresAt.toDate().getTime() + extensionMinutes * 60 * 1000).toLocaleString()}</>
+                )}
+              </Text>
+            )}
           </Field.Root>
 
           <Separator />
