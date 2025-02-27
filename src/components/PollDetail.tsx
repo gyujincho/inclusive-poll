@@ -12,7 +12,7 @@ import { ClipboardButton, ClipboardRoot } from "@/components/ui/clipboard"
 
 const PollDetail = ({ pollId }: { pollId: string }) => {
   const user = useProtectedUser();
-  const { data: poll, isLoading, error } = usePoll(pollId);
+  const { data: poll, isLoading, error } = usePoll(pollId, 1000);
   const endPollMutation = useEndPoll();
   const navigate = useNavigate();
   const [isRevoting, setIsRevoting] = useState(false);

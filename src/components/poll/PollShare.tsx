@@ -17,7 +17,7 @@ interface PollShareProps {
 }
 
 export default function PollShare({ pollId }: PollShareProps) {
-  const { data: poll, isLoading } = usePoll(pollId);
+  const { data: poll, isLoading } = usePoll(pollId, 1000);
   const remainingTime = useCountdown(poll?.expiresAt ?? null);
   const isExpired = remainingTime === '투표가 종료되었습니다';
 
