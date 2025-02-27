@@ -8,6 +8,8 @@ import {
   Heading,
   Text,
 } from '@chakra-ui/react';
+import { ClipboardButton, ClipboardRoot } from "@/components/ui/clipboard"
+
 
 interface PollShareProps {
   pollId: string;
@@ -51,6 +53,10 @@ export default function PollShare({ pollId }: PollShareProps) {
             includeMargin={true}
           />
         </Box>
+
+        <ClipboardRoot value="pollUrl" timeout={1000}>
+          <ClipboardButton />
+        </ClipboardRoot>
       </VStack>
 
       <VStack gap={4} p={6} borderRadius="lg">
