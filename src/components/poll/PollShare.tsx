@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { usePoll } from '../../hooks/usePolls';
 import { useCountdown } from '../../hooks/useCountdown';
