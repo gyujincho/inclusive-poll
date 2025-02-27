@@ -15,7 +15,7 @@ const CreatePoll = () => {
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [options, setOptions] = useState<string[]>(['', '']);
+  const [options, setOptions] = useState<string[]>([]);
   const [duration, setDuration] = useState(10);
   const [showVoters, setShowVoters] = useState(false);
   const [allowOptionCreation, setAllowOptionCreation] = useState(false);
@@ -38,10 +38,6 @@ const CreatePoll = () => {
           createdBy: user.uid,
           createdAt: Timestamp.now(),
         }));
-
-      if (pollOptions.length < 2) {
-        throw new Error('최소 2개의 옵션이 필요합니다.');
-      }
 
       const pollData: Omit<ChoicePoll, 'id'> = {
         type: 'choice',
@@ -73,7 +69,7 @@ const CreatePoll = () => {
   };
 
   const addOption = () => setOptions([...options, '']);
-  const removeOption = (index: number) => options.length > 2 && setOptions(options.filter((_, i) => i !== index));
+  const removeOption = (index: number) => setOptions(options.filter((_, i) => i !== index));
 
   return (
     <>
@@ -100,9 +96,7 @@ const CreatePoll = () => {
               {options.map((option, index) => (
                 <HStack key={index} w="100%">
                   <Input value={option} onChange={(e) => handleOptionChange(index, e.target.value)} placeholder={`옵션 ${index + 1}`} />
-                  {options.length > 2 && (
-                    <Button size="sm" colorScheme="red" variant="ghost" onClick={() => removeOption(index)}>삭제</Button>
-                  )}
+                  <Button size="sm" colorScheme="red" variant="ghost" onClick={() => removeOption(index)}>삭제</Button>
                 </HStack>
               ))}
               <Button size="sm" w="100%" colorScheme="blue" variant="surface" onClick={addOption}>+ 옵션 추가</Button>
