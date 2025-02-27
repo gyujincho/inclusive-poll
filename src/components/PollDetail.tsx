@@ -4,9 +4,11 @@ import { usePoll, useEndPoll } from '../hooks/usePolls';
 import PollResult from './poll/PollResult';
 import MyVote from './poll/MyVote';
 import VoteForm from './poll/VoteForm';
-import { VStack, Heading, Text, Separator, Button } from '@chakra-ui/react';
+import { VStack, Heading, Text, Separator, Button, HStack } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
+import { ClipboardButton, ClipboardRoot } from "@/components/ui/clipboard"
 
 const PollDetail = ({ pollId }: { pollId: string }) => {
   const user = useProtectedUser();
@@ -87,6 +89,7 @@ const PollDetail = ({ pollId }: { pollId: string }) => {
   return (
     <VStack gap={4} w="100%">
       <Heading as="h2" size="xl" mb={6} textAlign="center">{poll.title}</Heading>
+
       {poll.description && <Text>{poll.description}</Text>}
 
       <VStack w="100%" justifyContent="center">
@@ -94,6 +97,24 @@ const PollDetail = ({ pollId }: { pollId: string }) => {
         {poll.targetVoterCount && (
           <Text>참여율: {`${Math.round((poll.votes.length / poll.targetVoterCount) * 100)}%`}</Text>
         )}
+
+      <HStack>
+        <Button
+          asChild
+          variant="outline"
+          size="xs"
+        >
+          <Link to={`/polls/${pollId}/share`}>QR 코드 보기</Link>
+        </Button>
+        <ClipboardRoot value="pollUrl" timeout={1000}>
+          <ClipboardButton size="xs" variant="outline" />
+        </ClipboardRoot>
+      </HStack>
+      </VStack>
+
+      <Separator w="1px" css={{ margin: '6px 0' }}/>
+
+      <VStack w="100%" justifyContent="center" alignItems="center">
         {!ended && poll.expiresAt && (
           <Text 
             color={
