@@ -18,7 +18,7 @@ const CreatePoll = () => {
   const [options, setOptions] = useState<string[]>([]);
   const [duration, setDuration] = useState(10);
   const [showVoters, setShowVoters] = useState(false);
-  const [allowOptionCreation, setAllowOptionCreation] = useState(false);
+  const [allowOptionCreation, setAllowOptionCreation] = useState(true);
   const [allowMultipleSelection, setAllowMultipleSelection] = useState(false);
   const [minOptionsPerVote, setMinOptionsPerVote] = useState(1);
   const [maxOptionsPerVote, setMaxOptionsPerVote] = useState(1);
