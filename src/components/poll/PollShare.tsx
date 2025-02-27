@@ -19,15 +19,10 @@ interface PollShareProps {
 
 export default function PollShare({ pollId }: PollShareProps) {
   const { data: poll, isLoading } = usePoll(pollId);
-  const [pollUrl, setPollUrl] = useState('');
   const remainingTime = useCountdown(poll?.expiresAt ?? null);
   const isExpired = remainingTime === '투표가 종료되었습니다';
 
-  useEffect(() => {
-    // 현재 도메인 + /polls/:id 형태의 URL 생성
-    const url = new URL(`/polls/${pollId}`, window.location.origin);
-    setPollUrl(url.toString());
-  }, [pollId]);
+  const pollUrl = (new URL(`/polls/${pollId}`, window.location.origin)).toString();
 
   if (isLoading || !poll) {
     return <div>로딩 중...</div>;
@@ -96,7 +91,7 @@ export default function PollShare({ pollId }: PollShareProps) {
           />
         </Box>
 
-        <ClipboardRoot value="pollUrl" timeout={1000}>
+        <ClipboardRoot value={pollUrl} timeout={1000}>
           <ClipboardButton />
         </ClipboardRoot>
       </VStack>

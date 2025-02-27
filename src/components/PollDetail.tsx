@@ -106,7 +106,7 @@ const PollDetail = ({ pollId }: { pollId: string }) => {
         >
           <Link to={`/polls/${pollId}/share`}>QR 코드 보기</Link>
         </Button>
-        <ClipboardRoot value="pollUrl" timeout={1000}>
+        <ClipboardRoot value={(new URL(`/polls/${pollId}`, window.location.origin)).toString()} timeout={1000}>
           <ClipboardButton size="xs" variant="outline" />
         </ClipboardRoot>
       </HStack>
