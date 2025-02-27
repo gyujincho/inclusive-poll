@@ -52,7 +52,7 @@ const PollList = () => {
         style={{ textDecoration: 'none', width: '100%' }}
       >
         <Box
-          p={6}
+          p={8}
           borderWidth="1px"
           borderRadius="lg"
           _hover={{ 
@@ -65,9 +65,9 @@ const PollList = () => {
           width="100%"
           opacity={isEnded ? 0.8 : 1}
         >
-          <VStack align="stretch" gap={4}>
-            <HStack>
-              <Badge colorScheme={isEnded ? 'gray' : 'green'} fontSize="sm">
+          <VStack align="flex-start" gap={5}>
+            <HStack width="100%">
+              <Badge colorScheme={isEnded ? 'gray' : 'green'} fontSize="sm" px={2} py={1}>
                 {isEnded ? '종료됨' : '진행중'}
               </Badge>
               <Spacer />
@@ -78,18 +78,35 @@ const PollList = () => {
               </Text>
             </HStack>
 
-            <Box>
-              <Heading size="md" mb={2} color={isEnded ? 'gray.600' : 'black'}>{poll.title}</Heading>
+            <Box width="100%">
+              <Heading 
+                size="xl" 
+                mb={3}
+                color={isEnded ? 'gray.700' : 'black'} 
+                fontWeight={700}
+                lineHeight="1.4"
+                textAlign="left"
+              >
+                {poll.title}
+              </Heading>
               {poll.description && (
-                <Text color={isEnded ? 'gray.500' : 'gray.600'} maxLines={2}>{poll.description}</Text>
+                <Text 
+                  color={isEnded ? 'gray.500' : 'gray.600'} 
+                  maxLines={2} 
+                  fontSize="md"
+                  lineHeight="1.6"
+                  textAlign="left"
+                >
+                  {poll.description}
+                </Text>
               )}
             </Box>
 
-            <HStack gap={6}>
-              <Text fontSize="sm" color={isEnded ? 'gray.500' : 'gray.600'}>
+            <HStack width="100%" gap={6}>
+              <Text fontSize="md" color={isEnded ? 'gray.500' : 'gray.600'} fontWeight="medium">
                 선택지 {poll.options.length}개
               </Text>
-              <Text fontSize="sm" color={isEnded ? 'gray.500' : 'gray.600'}>
+              <Text fontSize="md" color={isEnded ? 'gray.500' : 'gray.600'} fontWeight="medium">
                 참여 {totalVotes}명
                 {poll.targetVoterCount && (
                   <> / {poll.targetVoterCount}명 ({progress}%)</>
